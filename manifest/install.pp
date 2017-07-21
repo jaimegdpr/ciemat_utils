@@ -1,30 +1,20 @@
 class ciemat_utils::install {
 
+    require ciemat_tweaks::folders
+
     package {['rsync','vim-enhanced']:
         ensure => present,
         before => Package['ciemat-utils'],
     }
 
-    file {'/root/packages':
-        ensure => directory,
-        owner => 'root',
-        group => 'root',
-        mode => '0644',
-        before => File['/root/packages/ciemat-utils.rpm']
-    }
-
-#    rsync::get {'/root/packages/ciemat-utils.rpm':
-#        source => 'rsync://lcg01/glite/utils/DISTRIB/prod/',
-#        include => "ciemat-utils*noarch.rpm",
-#        require => File['/root/packages/'],
-#        notify => Package['ciemat-utils'],
-#   }
-
+    # We use a symlink that points to the last version of the rpm.
+    # When the rpm is updated, the file is redownloaded and package resource is notified.
+    # to reintall it
     file {'/root/packages/ciemat-utils.rpm':
         ensure => present,
         links => follow,
         replace => true,
-        source => 'puppet:///modules/ciemat_utils/ciemat-utils-latest',
+        source => 'puppet:///grid_files/ciemat_utils/ciemat-utils-latest',
         source_permissions => use,
         notify => Package['ciemat-utils'],
     }
@@ -35,4 +25,5 @@ class ciemat_utils::install {
         source => '/root/packages/ciemat-utils.rpm',
         reinstall_on_refresh => true,
     }
+
 }
