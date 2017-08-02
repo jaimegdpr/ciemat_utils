@@ -15,7 +15,8 @@ class ciemat_utils::install {
         links => follow,
         replace => true,
         source => 'puppet:///grid_files/ciemat_utils/ciemat-utils-latest',
-        source_permissions => use,
+        owner => 'root',
+        group => 'root',
         notify => Package['ciemat-utils'],
     }
 
